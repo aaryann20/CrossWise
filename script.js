@@ -1,36 +1,45 @@
-const API_KEY = "AIzaSyBzkyoW3w_8BNtzV1ciDwBPrug3oQlb-aQ"
-const genAI = async (prompt)=>{
-  const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+const API_KEY = "AIzaSyBzkyoW3w_8BNtzV1ciDwBPrug3oQlb-aQ";
 
-const raw = JSON.stringify({
-  "contents": [
-    {
-      "parts": [
-        {
-          "text": prompt
-        }
-      ]
+const genAI = async (prompt) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const systemPrompt = "You are CrossWise AI assistant, specialized in international trade. You provide expertise in:\n" +
+        "• HS code classification\n" +
+        "• Export documentation\n" +
+        "• Trade compliance requirements\n" +
+        "• Government incentives\n" +
+        "• Market entry strategies.\n" +
+        "Respond concisely and professionally.";
+
+    const raw = JSON.stringify({
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": systemPrompt + "\n\nUser: " + prompt
+                    }
+                ]
+            }
+        ]
+    });
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+    };
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, requestOptions);
+        const result = await response.text();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
-  ]
-});
-
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
 };
-
-try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, requestOptions);
-    const result = await response.text();
-    console.log(result);
-    return result;
-} catch (error) {
-    console.error(error);
-    throw error;
-}
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app');
@@ -147,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
 // const r = {
 //     "candidates": [
 //       {
@@ -169,4 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //     },
 //     "modelVersion": "gemini-1.5-flash-002"
 //   }
-  
+
+
+
